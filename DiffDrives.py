@@ -68,24 +68,45 @@ def getDirs(nameDirsFilesTuple):
 def getFiles(nameDirsFilesTuple):
 	return [f for f in nameDirsFilesTuple[2] if f not in skippedFiles]
 
-def getChildren(path):
-	return list(os.walk(path))
+def getChildrenGenerator(path):
+	return os.walk(path)
+
+def getNext(generator):
+	try:
+		return next(generator)
+	except StopIteration:
+		return None
 '''
 [('Testing/DifferentDirectoryStructureDifferentFilesFlat', ['DiffTargetA', 'DiffTargetB'], [".DS_Store"]), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA', ['A', 'B', 'C'], ['fileA.txt', 'fileB.txt', 'fileC.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/B', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/C', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB', ['A', 'B'], ['fileA.txt', 'fileB.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/B', [], [])]
 '''
 def main(pathA, pathB):
-
+	print(f"main called with {pathA}, {pathB}")
 	#verify paths exist before walking them
 	if path.exists(pathA) and path.exists(pathB):
-		children = dict({"A":getChildren(pathA), "B":getChildren(pathB)})
+		children = dict({"A":getChildrenGenerator(pathA), "B":getChildrenGenerator(pathB)})
+		
+		FirstA = getNext(children["A"])
+		FirstB = getNext(children["B"])
 
+		#('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetA', ['A'], ['.DS_Store']) ('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB', ['A'], ['.DS_Store'])
+		while True:
+			nextA = getNext(children["A"])
+			nextB = getNext(children["B"])
+
+			#We're only looking for what's in A that isn't in B, so we don't care if children of B is None, we only worry about when we've exhausted children of A
+			if nextA == None:
+				return
+			
+			print(nextA, nextB)
+
+		'''
 		pointer = 0
 		maxSizeOfChilren = max(map(len, children.values()))
 		while pointer < maxSizeOfChilren:
 			dirs = dict({k:getDirs(v[0]) for k,v in children.items()})	
 			print(dirs)
 			pointer += 1
-
+		'''
 		#('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA', ['A', 'B', 'C'], ['fileA.txt', 'fileB.txt', 'fileC.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/B', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/C', [], [])
 		#('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB', ['A', 'B'], ['fileA.txt', 'fileB.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/B', [], [])
 		

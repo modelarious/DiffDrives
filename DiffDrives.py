@@ -1,9 +1,7 @@
-import os.path
 import pprint
-from os import path
+from os import path, sep, walk
 from sys import argv
-import subprocess
-import os
+import threading
 
 
 '''
@@ -63,7 +61,7 @@ that represents where we are in the file system:
 )
 '''
 def getChildrenGenerator(path):
-	return os.walk(path)
+	return walk(path)
 
 #wrapper to catch the StopIteration error
 def getNext(generator):
@@ -108,8 +106,8 @@ def compare(childA, childB, pathA, pathB):
 		printSTATUS("dirs in A but not in B:", inAbutNotB)
 
 		#add the path to everything in "inAbutNotB" and track it
-		dirExtension = [pathB + os.sep + x for x in inAbutNotB]
-		fileExtension = [pathB + os.sep + x for x in filesInAbutNotInB] 
+		dirExtension = [pathB + sep + x for x in inAbutNotB]
+		fileExtension = [pathB + sep + x for x in filesInAbutNotInB] 
 		printSTATUS("extending the solution by", dirExtension)
 		printSTATUS("extending the solution by", fileExtension)
 		diffSolu["dirs"].extend(dirExtension)
@@ -117,8 +115,8 @@ def compare(childA, childB, pathA, pathB):
 		
 
 		for childofBoth in union:
-			newPathA = pathA + os.sep + childofBoth
-			newPathB = pathB + os.sep + childofBoth
+			newPathA = pathA + sep + childofBoth
+			newPathB = pathB + sep + childofBoth
 			_compare_recurse(getChildrenGenerator(newPathA), getChildrenGenerator(newPathB), newPathA, newPathB)
 
 	_compare_recurse(childA, childB, pathA, pathB)

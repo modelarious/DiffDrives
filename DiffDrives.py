@@ -1,17 +1,29 @@
+''' 
+adapted from https://www.bogotobogo.com/python/Multithread/python_multithreading_Synchronization_Producer_Consumer_using_Queue.php
+fetched November 20, 2019
+'''
 import pprint
 from os import path, sep, walk
 from sys import argv
 import threading
 
+import time
+import logging
+import queue
 
 '''
-DEBUG and STATUS are both for debug purposes and just change the level of logging that is occuring.
+DEBUG, THREADINGDEBUG and STATUS are for debug purposes and just change the level of logging that is occuring.
 These don't ever need to be used unless you want more detail into what is going on
 '''
 DEBUG = False
 def printif(*args):
 	if DEBUG == True:
 		print(args)
+
+THREADINGDEBUG = True
+if THREADINGDEBUG == True:
+	logging.basicConfig(level=logging.DEBUG,
+			format='(%(threadName)-9s) %(message)s',)
 
 STATUS = False
 def printSTATUS(*args):
@@ -122,7 +134,40 @@ def compare(childA, childB, pathA, pathB):
 	_compare_recurse(childA, childB, pathA, pathB)
 	return diffSolu
 
+q = queue.Queue()
+class ConsumerThread(threading.Thread):
+	def __init__(self, group=None, target=None, name=None,
+			args=(), kwargs=None, verbose=None):
+		super(ConsumerThread,self).__init__()
+		self.name = name
+		return
+
+	def run(self):
+		while True:
+			if not q.empty():
+				item = q.get()
+				childA = getChildrenGenerator(item)
+				nextA = getNext(childA)
+				path,dirs,files = getDetails(nextA)
+				logging.debug('Getting ' + str(item) 
+						+ ' : ' + str(q.qsize()) + ' items in queue')
+				for dir in dirs:
+					item = path + sep + dir
+					q.put(item)
+					logging.debug('Putting ' + str(item)
+						+ ' : ' + str(q.qsize()) + ' items in queue')
+		return
+
+
 def main(pathA, pathB):
+	numThreads = 20
+	for consumerNum in range(1, numThreads + 1):
+		ConsumerThread(name='consumer' + str(consumerNum)).start()
+	item = 'Testing'
+	item = '/Volumes/MyRAID'
+	q.put(item)
+	time.sleep(40)
+	return
 	printSTATUS(f"main called with {pathA}, {pathB}")
 
 	#verify paths exist before walking them
@@ -144,6 +189,7 @@ def main(pathA, pathB):
 if __name__ == "__main__":
 	if len(argv) != 3:
 		#TODO print usage
+		print("usage: python3 DiffDrives.py /path/to/dir/1 /path/to/dir/2")
 		exit(-1)
 
 	#pass in the two paths to be diffed

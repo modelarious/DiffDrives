@@ -89,6 +89,8 @@ def compare(childA, childB, pathA, pathB):
 		#XXX XXX XXX generators are not needed anymore, you only need the first value from the generator
 		nextA = getNext(childA)
 		nextB = getNext(childB)
+		
+		#print(nextA, nextB)
 
 		#We're only looking for what's in A that isn't in B, so we don't care if children of B is None, we only worry about when we've exhausted children of A
 		if nextA == None:

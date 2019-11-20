@@ -1,4 +1,5 @@
 import os.path
+import pprint
 from os import path
 from sys import argv
 import subprocess
@@ -99,6 +100,7 @@ def main(pathA, pathB):
 	if path.exists(pathA) and path.exists(pathB):
 		diffSolu = compareWrapper(getChildrenGenerator(pathA), getChildrenGenerator(pathB), pathA, pathB)
 		print("final solution = '", diffSolu, "'")
+		pprint.pprint(diffSolu, width=300)
 		return diffSolu
 
 

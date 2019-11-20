@@ -31,22 +31,36 @@ TargetB = "DiffTargetB"
 
 Directories = ['SameDirectoryStructureFlat', 'SameDirectoryStructureNested', 'DifferentDirectoryStructureFlat', 'DifferentDirectoryStructureNested', 'SameFilesFlat', 'SameFilesNested', 'DifferentFilesFlat', 'DifferentFilesNested', 'DifferentDirectoryStructureDifferentFilesFlat', 'DifferentDirectoryStructureDifferentFilesNested']
 
-ExpectedOutputs = ["Hello World"] * len(Directories)
+ExpectedOutputs = [
+	{'dirs': [], 'files': []}, 
+	{'dirs': [], 'files': []},
+	{'dirs': ['Testing/DifferentDirectoryStructureFlat/DiffTargetB/C'], 'files': []},
+	{'dirs': ['Testing/DifferentDirectoryStructureNested/DiffTargetB/A/F'], 'files': []},
+	{'dirs': [], 'files': []},
+	{'dirs': [], 'files': []},
+	{'dirs': [], 'files': ['Testing/DifferentFilesFlat/DiffTargetB/fileC.txt']},
+	{'dirs': [], 'files': ['Testing/DifferentFilesNested/DiffTargetB/A/E/fileC.txt']},
+	{'dirs': ['Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/C'], 'files': ['Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/fileC.txt']},
+	{'dirs': ['Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB/A/F'], 'files': ['Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB/A/E/fileC.txt']}]
+
+	
 TestCaseNums = [f"TC_{i+1:03d}" for i in range(len(Directories))]
 
 
 @pytest.mark.parametrize("directory, expected_output, testcase_num", list(zip(Directories, ExpectedOutputs, TestCaseNums)))
 def test_eval(directory, expected_output, testcase_num):
 	print(BaseDir + directory, expected_output, testcase_num)
-	main(BaseDir + directory + "/" + TargetA, BaseDir + directory + "/" + TargetB)
-	#assert directory == expected_output
+	result = main(BaseDir + directory + "/" + TargetA, BaseDir + directory + "/" + TargetB)
+	assert ( result == expected_output)
 
 def test_hard():
 	path1 = "/Volumes/MyRAID/Games"
 	path2 = "/Volumes/FUCKYOUWIND/Games"
 	main(path1, path2)
 
+'''
 def test_very_hard():
 	path1 = "/Volumes/MyRAID"
 	path2 = "/Volumes/FUCKYOUWIND"
 	main(path1, path2)
+'''

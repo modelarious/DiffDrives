@@ -5,6 +5,11 @@ from sys import argv
 import subprocess
 import os
 
+
+'''
+DEBUG and STATUS are both for debug purposes and just change the level of logging that is occuring.
+These don't ever need to be used unless you want more detail into what is going on
+'''
 DEBUG = False
 def printif(*args):
 	if DEBUG == True:
@@ -18,6 +23,20 @@ def printSTATUS(*args):
 #various files that don't need to be considered
 skippedFiles = [".DS_Store"]
 
+'''
+When using os.walk we get a tuple of three entries that represents 
+where we are in the file system:
+(
+	'/path/to/directory', 
+	['dirs', 'in', 'this', 'directory'], 
+	['files.txt', 'in.txt', 'this.txt', 'directory.txt']
+)
+
+getDetails() unpacks that structure with special functions:
+- getPath() returns the path of the current directory
+- getDirs() returns all subdirectories in the current directory
+- getFiles() returns all files in the current directory with the exclusion of anything in "skippedFiles"
+'''
 def getDetails(nameDirsFilesTuple):
 	tup = nameDirsFilesTuple
 	if tup == None:
@@ -34,9 +53,19 @@ def getFiles(nameDirsFilesTuple):
 	return [f for f in nameDirsFilesTuple[2] if f not in skippedFiles]
 
 
+'''
+Walks through the directory structure and generates tuples of three entries 
+that represents where we are in the file system:
+(
+	'/path/to/directory', 
+	['dirs', 'in', 'this', 'directory'], 
+	['files.txt', 'in.txt', 'this.txt', 'directory.txt']
+)
+'''
 def getChildrenGenerator(path):
 	return os.walk(path)
 
+#wrapper to catch the StopIteration error
 def getNext(generator):
 	try:
 		return next(generator)
@@ -46,9 +75,9 @@ def getNext(generator):
 [('Testing/DifferentDirectoryStructureDifferentFilesFlat', ['DiffTargetA', 'DiffTargetB'], [".DS_Store"]), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA', ['A', 'B', 'C'], ['fileA.txt', 'fileB.txt', 'fileC.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/B', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/C', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB', ['A', 'B'], ['fileA.txt', 'fileB.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/B', [], [])]
 '''
 
-def compareWrapper(childA, childB, pathA, pathB):
+def compare(childA, childB, pathA, pathB):
 	diffSolu = {"files":[], "dirs":[]}
-	def compare(childA, childB, pathA, pathB):
+	def _compare_recurse(childA, childB, pathA, pathB):
 		printSTATUS("calling compare with", pathA, pathB)
 		#('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetA', [], []) ('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB', [], [])
 		#('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetA', ['A'], []) ('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB', [], [])
@@ -88,9 +117,9 @@ def compareWrapper(childA, childB, pathA, pathB):
 		for childofBoth in union:
 			newPathA = pathA + os.sep + childofBoth
 			newPathB = pathB + os.sep + childofBoth
-			compare(getChildrenGenerator(newPathA), getChildrenGenerator(newPathB), newPathA, newPathB)
+			_compare_recurse(getChildrenGenerator(newPathA), getChildrenGenerator(newPathB), newPathA, newPathB)
 
-	compare(childA, childB, pathA, pathB)
+	_compare_recurse(childA, childB, pathA, pathB)
 	return diffSolu
 
 def main(pathA, pathB):
@@ -98,7 +127,7 @@ def main(pathA, pathB):
 
 	#verify paths exist before walking them
 	if path.exists(pathA) and path.exists(pathB):
-		diffSolu = compareWrapper(getChildrenGenerator(pathA), getChildrenGenerator(pathB), pathA, pathB)
+		diffSolu = compare(getChildrenGenerator(pathA), getChildrenGenerator(pathB), pathA, pathB)
 		print("final solution = '", diffSolu, "'")
 		pprint.pprint(diffSolu, width=300)
 		return diffSolu

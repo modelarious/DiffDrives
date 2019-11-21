@@ -4,7 +4,7 @@ import time
 import logging
 import queue
 
-LOGGING = False
+LOGGING = True
 if LOGGING:
 	logging.basicConfig(level=logging.DEBUG,
                     format='(%(threadName)-9s) %(message)s',)
@@ -15,27 +15,42 @@ ProcessingFinished = threading.Condition()
 q = queue.Queue()
 
 class ConsumerThread(threading.Thread):
+
+	def _getDirInfo(self, receivedPath):
+		path, dirs, files = "",[],[]
+		
+		#Some directories won't let you enter them due to user privileges, and
+		#those directories raise a StopIteration error.
+		try:
+			path, dirs, files = next(walk(receivedPath))
+		except StopIteration:
+			pass
+		return path, dirs, files
+		
 	def run(self):
 		global queueSize
 		while True:
 			if not q.empty():
-				receivedPath = q.get()
-				path, dirs, files = "",[],[]
+				receivedPathA, receivedPathB  = q.get()
+				print(receivedPathA, receivedPathB)
 				
-				#Some directories won't let you enter them due to user privileges, and
-				#those directories raise a StopIteration error.
-				try:
-					path, dirs, files = next(walk(receivedPath))
-				except StopIteration:
-					pass
-				logging.debug('Got ' + str(path))
+				pathA, dirsA, filesA = self._getDirInfo(receivedPathA)
+				pathB, dirsB, filesB = self._getDirInfo(receivedPathB)
+				
+				print(self._getDirInfo(receivedPathA))
+				print(self._getDirInfo(receivedPathB))
+				
+				logging.debug('Got ' + str(pathA) + str(pathB))
+				
+				dirs = dirsA
+				path = pathA
 				
 				#heavy processing here
 
 				with queueSizeLock:
 					for dir in dirs:
                     	#construct path: "path/to/current/directory" + "/" + "sub_directory"
-						item = path + sep + dir 
+						item = (path + sep + dir, path + sep + dir) 
 						q.put(item)
 						logging.debug('Putting ' + str(item))
                 
@@ -56,18 +71,20 @@ class ConsumerThread(threading.Thread):
 
 def queueEmpty():
 	return queueSize == 0
+	
 def main():
 
-    initialPath = '/Volumes/MyRaid'
+    initialPathA = 'Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetA'
+    initialPathB = 'Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB'
+    initialPath = (initialPathA, initialPathB)
     q.put(initialPath)
-    numThreads = 350
+    numThreads = 1
     for consumerNum in range(1, numThreads + 1):
         c = ConsumerThread()
         c.daemon = True
         c.start()
     
-
-    
+	#main thread waits for all processing to be done, then kills the program
     with ProcessingFinished:
     	ProcessingFinished.wait_for(queueEmpty)
     	return 0

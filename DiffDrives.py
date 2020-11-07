@@ -1,8 +1,4 @@
-''' 
-adapted from https://www.bogotobogo.com/python/Multithread/python_multithreading_Synchronization_Producer_Consumer_using_Queue.php
-fetched November 20, 2019
-'''
-import pprint
+from pprint import pprint
 from os import path, sep, walk
 from sys import argv
 
@@ -20,38 +16,44 @@ def printSTATUS(*args):
 	if STATUS == True:
 		print(args)
 
-#various files that don't need to be considered
-skippedFiles = [".DS_Store"]
 
 '''
 When using os.walk we get a tuple of three entries that represents 
 where we are in the file system:
 (
-	'/path/to/directory', 
-	['dirs', 'in', 'this', 'directory'], 
-	['files.txt', 'in.txt', 'this.txt', 'directory.txt']
+    '/path/to/directory', 
+    ['dirs', 'in', 'this', 'directory'], 
+    ['files.txt', 'in.txt', 'this.txt', 'directory.txt']
 )
 
 getDetails() unpacks that structure with special functions:
 - getPath() returns the path of the current directory
-- getDirs() returns all subdirectories in the current directory
-- getFiles() returns all files in the current directory with the exclusion of anything in "skippedFiles"
+- getDirs() returns a set of all subdirectories in the current directory
+- getFiles() returns a set of all files in the current directory with the exclusion of anything in "skippedFiles"
 '''
-def getDetails(nameDirsFilesTuple):
-	tup = nameDirsFilesTuple
-	if tup == None:
-		return None, None, None
-	return getPath(tup), getDirs(tup), getFiles(tup)
+class DirectoryInfo(object):
+    def __init__(self, nameDirsFilesTuple):
+        #various files that don't need to be considered
+        skippedFiles = [".DS_Store"]
 
-def getPath(nameDirsFilesTuple):
-	return nameDirsFilesTuple[0]
+        self.path = nameDirsFilesTuple[0]
+        self.containedDirectories = set(nameDirsFilesTuple[1])
+        self.containedFiles = set((f for f in nameDirsFilesTuple[2] if f not in skippedFiles))
 
-def getDirs(nameDirsFilesTuple):
-	return nameDirsFilesTuple[1]
+    def getPath(self):
+        return self.path
 
-def getFiles(nameDirsFilesTuple):
-	return [f for f in nameDirsFilesTuple[2] if f not in skippedFiles]
+    def getDirs(self):
+        return self.containedDirectories
 
+    def getFiles(self):
+        return self.containedFiles
+
+from abc import ABC, abstractmethod
+class FetchDirectoryInfoAbstract(ABC):
+	@abstractmethod
+	def getDirectoryInfo(self, path):
+		return None
 
 '''
 Walks through the directory structure and generates tuples of three entries 
@@ -62,93 +64,85 @@ that represents where we are in the file system:
 	['files.txt', 'in.txt', 'this.txt', 'directory.txt']
 )
 '''
-def getChildrenGenerator(path):
-	return walk(path)
-
-#wrapper to catch the StopIteration error
-def getNext(generator):
-	try:
-		return next(generator)
-	except StopIteration:
-		return None
+#XXX make it pass this in via DI so I can use a different data source for testing
+class FetchDirectoryInfo(FetchDirectoryInfoAbstract):
+	def getDirectoryInfo(self, path):
+		try:
+			return DirectoryInfo(next(walk(path)))
+		except StopIteration:
+			return None
+    
 '''
 [('Testing/DifferentDirectoryStructureDifferentFilesFlat', ['DiffTargetA', 'DiffTargetB'], [".DS_Store"]), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA', ['A', 'B', 'C'], ['fileA.txt', 'fileB.txt', 'fileC.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/B', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/C', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB', ['A', 'B'], ['fileA.txt', 'fileB.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/B', [], [])]
 '''
+class CompareTwoDirectories(object):
+	def __init__(self, directoryInfoFetcher):
+		self.directoryInfoFetcher = directoryInfoFetcher
 
-def compare(childA, childB, pathA, pathB):
-	diffSolu = {"files":[], "dirs":[]}
-	def _compare_recurse(childA, childB, pathA, pathB):
-		printSTATUS("calling compare with", pathA, pathB)
-		#('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetA', [], []) ('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB', [], [])
-		#('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetA', ['A'], []) ('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB', [], [])
-		#('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetA', [], []) ('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB', ['A'], [])
-		#('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetA', ['A'], []) ('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB', ['A'], [])
-		#('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetA', ['A', 'B'], []) ('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB', ['A'], [])
-		#('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetA', ['A'], []) ('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB', ['A', 'B'], [])
+	def compare(self, pathA, pathB):
+		directoryInfoFetcher = FetchDirectoryInfo()
+		diffSolu = {"files":[], "dirs":[]}
+		def _compare_recurse(pathA, pathB):
+			printSTATUS("calling compare with", pathA, pathB)
 
-		#XXX XXX XXX generators are not needed anymore, you only need the first value from the generator
-		nextA = getNext(childA)
-		nextB = getNext(childB)
-		
-		#print(nextA, nextB)
+			directoryInfoA = directoryInfoFetcher.getDirectoryInfo(pathA)
+			directoryInfoB = directoryInfoFetcher.getDirectoryInfo(pathB)
 
-		#We're only looking for what's in A that isn't in B, so we don't care if children of B is None, we only worry about when we've exhausted children of A
-		if nextA == None:
-			printif("Exhausted A, returning diff dict")
-			return None
+			#We're only looking for what's in A that isn't in B, so we don't care if children of B is None, we only worry about when we've exhausted children of A
+			if directoryInfoA == None:
+				printif("Exhausted A, returning diff dict")
+				return None
 
-		pathA, dirsA, filesA = getDetails(nextA)
-		pathB, dirsB, filesB = getDetails(nextB)
-		union = [x for x in dirsB if x in dirsA]
-		inAbutNotB = [x for x in dirsA if x not in dirsB]
-		filesInAbutNotInB = [x for x in filesA if x not in filesB]
+			pathA, dirsA, filesA = directoryInfoA.getPath(), directoryInfoA.getDirs(), directoryInfoA.getFiles()
+			pathB, dirsB, filesB = directoryInfoB.getPath(), directoryInfoB.getDirs(), directoryInfoB.getFiles()
+			
+			union = [x for x in dirsB if x in dirsA]
+			inAbutNotB = [x for x in dirsA if x not in dirsB]
+			filesInAbutNotInB = [x for x in filesA if x not in filesB]
 
-		printif(pathA, dirsA, filesA, "||", pathB, dirsB, filesB)
-		printSTATUS("dirs in B and in A:", union)
-		printSTATUS("dirs in A but not in B:", inAbutNotB)
+			printif(pathA, dirsA, filesA, "||", pathB, dirsB, filesB)
+			printSTATUS("dirs in B and in A:", union)
+			printSTATUS("dirs in A but not in B:", inAbutNotB)
 
-		#add the path to everything in "inAbutNotB" and track it
-		dirExtension = [pathB + sep + x for x in inAbutNotB]
-		fileExtension = [pathB + sep + x for x in filesInAbutNotInB] 
-		printSTATUS("extending the solution by", dirExtension)
-		printSTATUS("extending the solution by", fileExtension)
-		diffSolu["dirs"].extend(dirExtension)
-		diffSolu["files"].extend(fileExtension)
-		
+			#add the path to everything in "inAbutNotB" and track it
+			dirExtension = [pathB + sep + x for x in inAbutNotB]
+			fileExtension = [pathB + sep + x for x in filesInAbutNotInB] 
+			printSTATUS("extending the solution by", dirExtension)
+			printSTATUS("extending the solution by", fileExtension)
 
-		for childofBoth in union:
-			newPathA = pathA + sep + childofBoth
-			newPathB = pathB + sep + childofBoth
-			_compare_recurse(getChildrenGenerator(newPathA), getChildrenGenerator(newPathB), newPathA, newPathB)
+			#XXX separate data storage from the class logic
+			diffSolu["dirs"].extend(dirExtension)
+			diffSolu["files"].extend(fileExtension)
+			
 
-	_compare_recurse(childA, childB, pathA, pathB)
-	return diffSolu
+			for childofBoth in union:
+				newPathA = pathA + sep + childofBoth
+				newPathB = pathB + sep + childofBoth
+				_compare_recurse(newPathA, newPathB)
+
+		_compare_recurse(pathA, pathB)
+		return diffSolu
 
 def main(pathA, pathB):
 	printSTATUS(f"main called with {pathA}, {pathB}")
 
+	directoryInfoFetcher = FetchDirectoryInfo()
+	twoDirComp = CompareTwoDirectories(directoryInfoFetcher)
+
 	#verify paths exist before walking them
 	if path.exists(pathA) and path.exists(pathB):
-		diffSolu = compare(getChildrenGenerator(pathA), getChildrenGenerator(pathB), pathA, pathB)
-		print("final solution = '", diffSolu, "'")
-		pprint.pprint(diffSolu, width=300)
-		return diffSolu
-
-
-		#('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA', ['A', 'B', 'C'], ['fileA.txt', 'fileB.txt', 'fileC.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/B', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/C', [], [])
-		#('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB', ['A', 'B'], ['fileA.txt', 'fileB.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/B', [], [])
-		
-		
-	#else:
-	#	return -1
+		diffSolu = twoDirComp.compare(pathA, pathB)
+		pprint(diffSolu, width=300)
+		return diffSolu	
+	return -1
 		
 
 if __name__ == "__main__":
 	if len(argv) != 3:
-		#TODO print usage
 		print("usage: python3 DiffDrives.py /path/to/dir/1 /path/to/dir/2")
 		exit(-1)
 
 	#pass in the two paths to be diffed
-	main(argv[1], argv[2])
+	returnCode = main(argv[1], argv[2])
+	exit(returnCode)
 	 

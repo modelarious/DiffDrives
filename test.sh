@@ -1,2 +1,2 @@
-#pytest -sv DirectoryAndFileTests.py
-pytest -sv -vv ParallelTests.py
+pytest -sv DirectoryAndFileTests.py
+#pytest -sv -vv ParallelTests.py

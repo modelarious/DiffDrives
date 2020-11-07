@@ -30,7 +30,18 @@ BaseDir = "Testing/"
 TargetA = "DiffTargetA"
 TargetB = "DiffTargetB"
 
-Directories = ['SameDirectoryStructureFlat', 'SameDirectoryStructureNested', 'DifferentDirectoryStructureFlat', 'DifferentDirectoryStructureNested', 'SameFilesFlat', 'SameFilesNested', 'DifferentFilesFlat', 'DifferentFilesNested', 'DifferentDirectoryStructureDifferentFilesFlat', 'DifferentDirectoryStructureDifferentFilesNested']
+Directories = [
+	'SameDirectoryStructureFlat', 
+	'SameDirectoryStructureNested', 
+	'DifferentDirectoryStructureFlat', 
+	'DifferentDirectoryStructureNested', 
+	'SameFilesFlat', 
+	'SameFilesNested', 
+	'DifferentFilesFlat', 
+	'DifferentFilesNested', 
+	'DifferentDirectoryStructureDifferentFilesFlat', 
+	'DifferentDirectoryStructureDifferentFilesNested'
+]
 
 ExpectedOutputs = [
 	{'dirs': [], 'files': []}, 
@@ -42,11 +53,10 @@ ExpectedOutputs = [
 	{'dirs': [], 'files': ['Testing/DifferentFilesFlat/DiffTargetB/fileC.txt']},
 	{'dirs': [], 'files': ['Testing/DifferentFilesNested/DiffTargetB/A/E/fileC.txt']},
 	{'dirs': ['Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/C'], 'files': ['Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/fileC.txt']},
-	{'dirs': ['Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB/A/F'], 'files': ['Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB/A/E/fileC.txt']}]
-
+	{'dirs': ['Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB/A/F'], 'files': ['Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB/A/E/fileC.txt']}
+]
 	
 TestCaseNums = [f"TC_{i+1:03d}" for i in range(len(Directories))]
-
 
 @pytest.mark.parametrize("directory, expected_output, testcase_num", list(zip(Directories, ExpectedOutputs, TestCaseNums)))
 def test_eval(directory, expected_output, testcase_num):

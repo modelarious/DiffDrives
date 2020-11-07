@@ -6,15 +6,15 @@ from sys import argv
 DEBUG and STATUS are for debug purposes and just change the level of logging that is occuring.
 These don't ever need to be used unless you want more detail into what is going on
 '''
-DEBUG = False
-def printif(*args):
+DEBUG = True
+def printDEBUG(*args):
 	if DEBUG == True:
-		print(args)
+		print(*args)
 
-STATUS = False
+STATUS = True
 def printSTATUS(*args):
 	if STATUS == True:
-		print(args)
+		print(*args)
 
 
 '''
@@ -103,42 +103,54 @@ class CompareTwoDirectories(object):
 
 	def compare(self, pathA, pathB):
 		self.dataStorage = DiffDataStructure()
-		self._compare_recurse(pathA, pathB)
+		self._compareRecurse(pathA, pathB)
 		return self.dataStorage.getDiff()
 
-	def _compare_recurse(self, pathA, pathB):
-		printSTATUS("calling compare with", pathA, pathB)
+	def _getResultsOfSetOperations(self, dirsA, dirsB, filesA, filesB):
+		partialUnion = [x for x in dirsB if x in dirsA]
+		printSTATUS("dirs in B that are also in A:", partialUnion)
+
+		dirsInAbutNotB = [x for x in dirsA if x not in dirsB]
+		printSTATUS("dirs in A but not in B:", dirsInAbutNotB)
+
+		filesInAbutNotInB = [x for x in filesA if x not in filesB]
+		printSTATUS("files in A but not in B:", filesInAbutNotInB)
+
+		return partialUnion, dirsInAbutNotB, filesInAbutNotInB
+	
+	def _trackDifferencesAndCalculateNextCandidates(self, directoryInfoA, directoryInfoB):
+		pathA, dirsA, filesA = directoryInfoA.getPath(), directoryInfoA.getDirs(), directoryInfoA.getFiles()
+		pathB, dirsB, filesB = directoryInfoB.getPath(), directoryInfoB.getDirs(), directoryInfoB.getFiles()
+		printDEBUG(pathA, dirsA, filesA, "||", pathB, dirsB, filesB)
+
+		partialUnion, dirsInAbutNotB, filesInAbutNotInB = self._getResultsOfSetOperations(dirsA, dirsB, filesA, filesB)
+
+		#add the path to everything in "dirsInAbutNotB" and track it
+		dirExtension = [pathB + sep + x for x in dirsInAbutNotB]
+		fileExtension = [pathB + sep + x for x in filesInAbutNotInB] 
+
+		self.dataStorage.trackDirs(dirExtension)
+		self.dataStorage.trackFiles(fileExtension)
+
+		return partialUnion
+
+	def _compareRecurse(self, pathA, pathB):
+		printSTATUS("calling compareRecurse with", pathA, pathB)
 
 		directoryInfoA = self.directoryInfoFetcher.getDirectoryInfo(pathA)
 		directoryInfoB = self.directoryInfoFetcher.getDirectoryInfo(pathB)
 
 		#We're only looking for what's in A that isn't in B, so we don't care if children of B is None, we only worry about when we've exhausted children of A
 		if directoryInfoA == None:
-			printif("Exhausted A, returning diff dict")
+			printDEBUG("Exhausted A, returning diff dict")
 			return None
 
-		pathA, dirsA, filesA = directoryInfoA.getPath(), directoryInfoA.getDirs(), directoryInfoA.getFiles()
-		pathB, dirsB, filesB = directoryInfoB.getPath(), directoryInfoB.getDirs(), directoryInfoB.getFiles()
+		partialUnion = self._trackDifferencesAndCalculateNextCandidates(directoryInfoA, directoryInfoB)
 		
-		partialUnion = [x for x in dirsB if x in dirsA]
-		inAbutNotB = [x for x in dirsA if x not in dirsB]
-		filesInAbutNotInB = [x for x in filesA if x not in filesB]
-
-		printif(pathA, dirsA, filesA, "||", pathB, dirsB, filesB)
-		printSTATUS("dirs in B that are also in A:", partialUnion)
-		printSTATUS("dirs in A but not in B:", inAbutNotB)
-
-		#add the path to everything in "inAbutNotB" and track it
-		dirExtension = [pathB + sep + x for x in inAbutNotB]
-		fileExtension = [pathB + sep + x for x in filesInAbutNotInB] 
-
-		self.dataStorage.trackDirs(dirExtension)
-		self.dataStorage.trackFiles(fileExtension)
-
 		for childofBoth in partialUnion:
 			newPathA = pathA + sep + childofBoth
 			newPathB = pathB + sep + childofBoth
-			self._compare_recurse(newPathA, newPathB)
+			self._compareRecurse(newPathA, newPathB)
 
 def main(pathA, pathB):
 	printSTATUS(f"main called with {pathA}, {pathB}")

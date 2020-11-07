@@ -10,9 +10,9 @@ def main(pathA, pathB):
 
 	#verify paths exist before walking them
 	if path.exists(pathA) and path.exists(pathB):
-		diffSolu = twoDirComp.compare(pathA, pathB)
-		pprint(diffSolu, width=300)
-		return diffSolu	
+		diffSolution = twoDirComp.compare(pathA, pathB)
+		pprint(diffSolution, width=300)
+		return diffSolution	
 	return -1
 
 if __name__ == "__main__":

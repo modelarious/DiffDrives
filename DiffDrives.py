@@ -64,7 +64,6 @@ that represents where we are in the file system:
 	['files.txt', 'in.txt', 'this.txt', 'directory.txt']
 )
 '''
-#XXX make it pass this in via DI so I can use a different data source for testing
 class FetchDirectoryInfo(FetchDirectoryInfoAbstract):
 	def getDirectoryInfo(self, path):
 		try:
@@ -103,44 +102,43 @@ class CompareTwoDirectories(object):
 		self.directoryInfoFetcher = directoryInfoFetcher
 
 	def compare(self, pathA, pathB):
-		dataStorage = DiffDataStructure()
+		self.dataStorage = DiffDataStructure()
+		self._compare_recurse(pathA, pathB)
+		return self.dataStorage.getDiff()
+
+	def _compare_recurse(self, pathA, pathB):
+		printSTATUS("calling compare with", pathA, pathB)
+
+		directoryInfoA = self.directoryInfoFetcher.getDirectoryInfo(pathA)
+		directoryInfoB = self.directoryInfoFetcher.getDirectoryInfo(pathB)
+
+		#We're only looking for what's in A that isn't in B, so we don't care if children of B is None, we only worry about when we've exhausted children of A
+		if directoryInfoA == None:
+			printif("Exhausted A, returning diff dict")
+			return None
+
+		pathA, dirsA, filesA = directoryInfoA.getPath(), directoryInfoA.getDirs(), directoryInfoA.getFiles()
+		pathB, dirsB, filesB = directoryInfoB.getPath(), directoryInfoB.getDirs(), directoryInfoB.getFiles()
 		
-		def _compare_recurse(pathA, pathB):
-			printSTATUS("calling compare with", pathA, pathB)
+		partialUnion = [x for x in dirsB if x in dirsA]
+		inAbutNotB = [x for x in dirsA if x not in dirsB]
+		filesInAbutNotInB = [x for x in filesA if x not in filesB]
 
-			directoryInfoA = self.directoryInfoFetcher.getDirectoryInfo(pathA)
-			directoryInfoB = self.directoryInfoFetcher.getDirectoryInfo(pathB)
+		printif(pathA, dirsA, filesA, "||", pathB, dirsB, filesB)
+		printSTATUS("dirs in B that are also in A:", partialUnion)
+		printSTATUS("dirs in A but not in B:", inAbutNotB)
 
-			#We're only looking for what's in A that isn't in B, so we don't care if children of B is None, we only worry about when we've exhausted children of A
-			if directoryInfoA == None:
-				printif("Exhausted A, returning diff dict")
-				return None
+		#add the path to everything in "inAbutNotB" and track it
+		dirExtension = [pathB + sep + x for x in inAbutNotB]
+		fileExtension = [pathB + sep + x for x in filesInAbutNotInB] 
 
-			pathA, dirsA, filesA = directoryInfoA.getPath(), directoryInfoA.getDirs(), directoryInfoA.getFiles()
-			pathB, dirsB, filesB = directoryInfoB.getPath(), directoryInfoB.getDirs(), directoryInfoB.getFiles()
-			
-			union = [x for x in dirsB if x in dirsA]
-			inAbutNotB = [x for x in dirsA if x not in dirsB]
-			filesInAbutNotInB = [x for x in filesA if x not in filesB]
+		self.dataStorage.trackDirs(dirExtension)
+		self.dataStorage.trackFiles(fileExtension)
 
-			printif(pathA, dirsA, filesA, "||", pathB, dirsB, filesB)
-			printSTATUS("dirs in B and in A:", union)
-			printSTATUS("dirs in A but not in B:", inAbutNotB)
-
-			#add the path to everything in "inAbutNotB" and track it
-			dirExtension = [pathB + sep + x for x in inAbutNotB]
-			fileExtension = [pathB + sep + x for x in filesInAbutNotInB] 
-
-			dataStorage.trackDirs(dirExtension)
-			dataStorage.trackFiles(fileExtension)
-
-			for childofBoth in union:
-				newPathA = pathA + sep + childofBoth
-				newPathB = pathB + sep + childofBoth
-				_compare_recurse(newPathA, newPathB)
-
-		_compare_recurse(pathA, pathB)
-		return dataStorage.getDiff()
+		for childofBoth in partialUnion:
+			newPathA = pathA + sep + childofBoth
+			newPathB = pathB + sep + childofBoth
+			self._compare_recurse(newPathA, newPathB)
 
 def main(pathA, pathB):
 	printSTATUS(f"main called with {pathA}, {pathB}")

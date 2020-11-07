@@ -71,7 +71,30 @@ class FetchDirectoryInfo(FetchDirectoryInfoAbstract):
 			return DirectoryInfo(next(walk(path)))
 		except StopIteration:
 			return None
-    
+
+
+# separate data storage logic from the class logic
+class DiffDataStructure(object):
+	
+	def __init__(self):
+		self.filesKey = "files"
+		self.dirsKey = "dirs"
+		
+		# track files and dirs that differ between the two sources
+		self.diff = {self.filesKey:[], self.dirsKey:[]}
+	
+	def trackFiles(self, files):
+		printSTATUS("extending the tracked files by", files)
+		self.diff[self.filesKey].extend(files)
+	
+	def trackDirs(self, dirs):
+		printSTATUS("extending the tracked dirs by", dirs)
+		self.diff[self.dirsKey].extend(dirs)
+	
+	def getDiff(self):
+		return self.diff
+
+
 '''
 [('Testing/DifferentDirectoryStructureDifferentFilesFlat', ['DiffTargetA', 'DiffTargetB'], [".DS_Store"]), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA', ['A', 'B', 'C'], ['fileA.txt', 'fileB.txt', 'fileC.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/B', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/C', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB', ['A', 'B'], ['fileA.txt', 'fileB.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/B', [], [])]
 '''
@@ -80,13 +103,13 @@ class CompareTwoDirectories(object):
 		self.directoryInfoFetcher = directoryInfoFetcher
 
 	def compare(self, pathA, pathB):
-		directoryInfoFetcher = FetchDirectoryInfo()
-		diffSolu = {"files":[], "dirs":[]}
+		dataStorage = DiffDataStructure()
+		
 		def _compare_recurse(pathA, pathB):
 			printSTATUS("calling compare with", pathA, pathB)
 
-			directoryInfoA = directoryInfoFetcher.getDirectoryInfo(pathA)
-			directoryInfoB = directoryInfoFetcher.getDirectoryInfo(pathB)
+			directoryInfoA = self.directoryInfoFetcher.getDirectoryInfo(pathA)
+			directoryInfoB = self.directoryInfoFetcher.getDirectoryInfo(pathB)
 
 			#We're only looking for what's in A that isn't in B, so we don't care if children of B is None, we only worry about when we've exhausted children of A
 			if directoryInfoA == None:
@@ -107,13 +130,9 @@ class CompareTwoDirectories(object):
 			#add the path to everything in "inAbutNotB" and track it
 			dirExtension = [pathB + sep + x for x in inAbutNotB]
 			fileExtension = [pathB + sep + x for x in filesInAbutNotInB] 
-			printSTATUS("extending the solution by", dirExtension)
-			printSTATUS("extending the solution by", fileExtension)
 
-			#XXX separate data storage from the class logic
-			diffSolu["dirs"].extend(dirExtension)
-			diffSolu["files"].extend(fileExtension)
-			
+			dataStorage.trackDirs(dirExtension)
+			dataStorage.trackFiles(fileExtension)
 
 			for childofBoth in union:
 				newPathA = pathA + sep + childofBoth
@@ -121,7 +140,7 @@ class CompareTwoDirectories(object):
 				_compare_recurse(newPathA, newPathB)
 
 		_compare_recurse(pathA, pathB)
-		return diffSolu
+		return dataStorage.getDiff()
 
 def main(pathA, pathB):
 	printSTATUS(f"main called with {pathA}, {pathB}")
@@ -135,7 +154,6 @@ def main(pathA, pathB):
 		pprint(diffSolu, width=300)
 		return diffSolu	
 	return -1
-		
 
 if __name__ == "__main__":
 	if len(argv) != 3:

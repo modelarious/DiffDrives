@@ -124,56 +124,113 @@ DifferentDirectoryStructureDifferentFilesFlat:
       DiffTargetB/C
     ]
 
-# E:
-#   - "a"
-#   - "b"
-#   - "c"
-#   - J:
-#     - "c"
-#     - "d"
-#   - K: []
-
-
-# # DifferentDirectoryStructureDifferentFilesFlat:
-# #   setup:
-# #     DiffTargetA:
-# #       - A: []
-# #       - B: []
-# #       - C: []
-# #       - fileA.txt
-# #       - fileB.txt
-# #       - fileC.txt
-# #     DiffTargetB:
-# #       - A: []
-# #       - B: []
-# #       - fileA.txt
-# #       - fileB.txt
-      
-# DifferentDirectoryStructureDifferentFilesNested:
-#   setup:
-#     DiffTargetA:
-#       - A:
-#         - E:
-#           - fileA.txt
-#           - fileB.txt
-#           - fileC.txt
-#         - F: []
+DifferentDirectoryStructureDifferentFilesNested:
+  setup:
+    DiffTargetA:
+      dirs:
+        F:
+        A:
+          files: [
+            fileA.txt,
+            fileB.txt,
+            fileC.txt,
+          ]
+          dirs:
+            E:
     
-#     DiffTargetB:
-#       - A:
-#         - E:
-#           - fileA.txt
-#           - fileB.txt
+    DiffTargetB:
+      dirs:
+        A:
+          files: [
+            fileA.txt,
+            fileB.txt,
+          ]
+          dirs:
+            E:
+          
+  expectedOutput:
+    dirs: [
+      DiffTargetB/A/F
+    ] 
+    files: [
+      DiffTargetB/A/E/fileC.txt
+    ]
 
-# DifferentDirectoryStructureFlat:
+DifferentDirectoryStructureFlat:
+  setup:
+    DiffTargetA:
+      dirs:
+        A:
+        B:
+        C:
+    DiffTargetB:
+      dirs:
+        A:
+        B:
+  expectedOutput:
+    dirs: [
+      DiffTargetB/C
+    ]
+    files: []
+
+# DeeplyNestedFileDifference:
 #   setup:
 #     DiffTargetA:
-#       - A: []
-#       - B: []
-#       - C: []
+#       dirs:
+#         A:
+#           dirs:
+#             B:
+#               dirs:
+#                 C:
+#                   dirs:
+#                     D:
+#                   files: [
+#                     1.txt,
+#                     2.txt
+#                   ]
 #     DiffTargetB:
-#       - A: []
-#       - B: []
+#       dirs:
+#         A:
+#           dirs:
+#             B:
+#               dirs:
+#                 C:
+#                   dirs:
+#                     D:
+#                   files: [
+#                     1.txt
+#                   ]
+
+# DeeplyNestedDirectoryDifference:
+#   setup:
+#     DiffTargetA:
+#       dirs:
+#         A:
+#           dirs:
+#             B:
+#               dirs:
+#                 C:
+#                   dirs:
+#                     D:
+#                     E:
+#                   files: [
+#                     1.txt,
+#                     2.txt
+#                   ]
+#     DiffTargetB:
+#       dirs:
+#         A:
+#           dirs:
+#             B:
+#               dirs:
+#                 C:
+#                   dirs:
+#                     D:
+#                   files: [
+#                     1.txt,
+#                     2.txt
+#                   ]
+
 
 # DifferentDirectoryStructureNested:
 #   setup:

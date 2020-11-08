@@ -1,19 +1,31 @@
 import yaml
 from os import sep
 
-class YamlParser(object):
-    def fetchYaml(self):
-        with open("configTesting.yml", 'r') as config:
+from os import path, makedirs, utime
+
+class YamlReader(object):
+    def fetchYaml(self, path):
+        with open(path, 'r') as config:
             return yaml.safe_load(config)
 
 # object that handles interacting with the file system
 class TestDataBuilder(object):
+    # implementation of `touch` from https://stackoverflow.com/a/12654798/7520564
+    def _touch(self, path):
+        with open(path, 'a'):
+            utime(path, None)
+
     def createFiles(self, context, filesToCreate):
         for f in filesToCreate:
-            print(f"FILE: {context + sep + f}")
+            filePath = context + sep + f
+            if not path.exists(filePath):
+                print(f"FILE: {filePath}")
+                self._touch(filePath)
     
     def createDir(self, context):
-        print(f"DIR: {context}")
+        if not path.exists(context):
+            print(f"DIR: {context}")
+            makedirs(context)
 
 # object that handles interpreting config and using the TestDataBuilder to 
 # create the directory/file structures found in configTesting.yml for use in
@@ -27,7 +39,7 @@ class TestDataInterpreter(object):
         self.filesKey = 'files'
         self.dirsKey = 'dirs'
 
-        self.baseDir = 'Testing'
+        self.baseDir = 'TestingMock'
         self.DiffTargetAKey = 'DiffTargetA'
         self.DiffTargetBKey = 'DiffTargetB'
         
@@ -62,8 +74,8 @@ class TestDataInterpreter(object):
                 self._handleDirectory(context + sep + subDirName, subDirContents)
         
 
-yamlParser = YamlParser()
-parsedYaml = yamlParser.fetchYaml()
+yamlReader = YamlReader()
+parsedYaml = yamlReader.fetchYaml("configTesting.yml")
 testDataBuilder = TestDataBuilder()
 x = TestDataInterpreter(parsedYaml, testDataBuilder)
 x.setupTestingData()

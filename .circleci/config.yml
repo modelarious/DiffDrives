@@ -3,17 +3,25 @@ version: 2.1
 orbs:
   python: circleci/python@1.2.1
 
-#jobs:
-#  build:
-#    executor: python/default
-#    steps:
-#      - checkout
-#      - run:
-#          name: Run Tests
-#          command: bash test.sh
+jobs:
+  build:
+    executor: python/default
+    steps:
+      - checkout
+      - run:
+          name: Run Tests
+          command: |
+            pip install -r requirements.txt
+            mkdir test-results
+            pytest --junitxml=test-results/junit.xml
+      - store_test_results:
+          path: test-results
 
-workflows:
-  main:
-    jobs:
-      - python/test:
-          test-tool: pytest
+      - store_artifacts:
+          path: test-results
+
+#workflows:
+#  main:
+#    jobs:
+#      - python/test:
+#          test-tool: pytest

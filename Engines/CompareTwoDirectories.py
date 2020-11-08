@@ -7,7 +7,6 @@ class CompareTwoDirectories(object):
 		self.directoryInfoFetcher = directoryInfoFetcher
 
 	def compare(self, pathA, pathB):
-		printSTATUS("compare called")
 		self.dataStorage = DiffDataStructure()
 		self._compareRecurse(pathA, pathB)
 		return self.dataStorage.getDiff()

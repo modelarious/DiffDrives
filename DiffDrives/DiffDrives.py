@@ -1,8 +1,8 @@
 from pprint import pprint
 from os import path
 from sys import argv
-from DiffDrives.Factories.CompareTwoDirectoriesEngineFactory import CompareTwoDirectoriesEngineFactory
-from DiffDrives.Logging import printSTATUS
+from Factories.CompareTwoDirectoriesEngineFactory import CompareTwoDirectoriesEngineFactory
+from Logging import printSTATUS
 
 def main(pathA, pathB):
 	printSTATUS(f"main called with {pathA}, {pathB}")

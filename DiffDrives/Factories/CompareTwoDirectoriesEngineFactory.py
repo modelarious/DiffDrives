@@ -1,5 +1,5 @@
-from DiffDrives.Fetchers.FetchDirectoryInfo import FetchDirectoryInfo
-from DiffDrives.Engines.CompareTwoDirectories import CompareTwoDirectories
+from Fetchers.FetchDirectoryInfo import FetchDirectoryInfo
+from Engines.CompareTwoDirectories import CompareTwoDirectories
 
 class CompareTwoDirectoriesEngineFactory(object):
     @staticmethod

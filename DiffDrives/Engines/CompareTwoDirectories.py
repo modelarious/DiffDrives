@@ -1,6 +1,6 @@
 from os import sep
-from DiffDrives.DataStructures.DiffDataStructure import DiffDataStructure
-from DiffDrives.Logging import printSTATUS, printDEBUG
+from DataStructures.DiffDataStructure import DiffDataStructure
+from Logging import printSTATUS, printDEBUG
 
 '''
 [('Testing/DifferentDirectoryStructureDifferentFilesFlat', ['DiffTargetA', 'DiffTargetB'], [".DS_Store"]), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA', ['A', 'B', 'C'], ['fileA.txt', 'fileB.txt', 'fileC.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/B', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/C', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB', ['A', 'B'], ['fileA.txt', 'fileB.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/B', [], [])]
@@ -13,6 +13,9 @@ class CompareTwoDirectories(object):
 		self.dataStorage = DiffDataStructure()
 		self._compareRecurse(pathA, pathB)
 		return self.dataStorage.getDiff()
+	
+	def pathFrom(self, pathStart, nextLevel):
+		return pathStart + sep + nextLevel
 
 	def _getResultsOfSetOperations(self, dirsA, dirsB, filesA, filesB):
 		partialUnion = [x for x in dirsB if x in dirsA]
@@ -34,8 +37,8 @@ class CompareTwoDirectories(object):
 		partialUnion, dirsInAbutNotB, filesInAbutNotInB = self._getResultsOfSetOperations(dirsA, dirsB, filesA, filesB)
 
 		#add the path to everything in "dirsInAbutNotB" and track it
-		dirExtension = [pathB + sep + x for x in dirsInAbutNotB]
-		fileExtension = [pathB + sep + x for x in filesInAbutNotInB] 
+		dirExtension = [self.pathFrom(pathB, x) for x in dirsInAbutNotB]
+		fileExtension = [self.pathFrom(pathB, x) for x in filesInAbutNotInB] 
 
 		self.dataStorage.trackDirs(dirExtension)
 		self.dataStorage.trackFiles(fileExtension)
@@ -53,9 +56,9 @@ class CompareTwoDirectories(object):
 			printDEBUG("Exhausted A, returning diff dict")
 			return None
 
-		partialUnion = self._trackDifferencesAndCalculateNextCandidates(directoryInfoA, directoryInfoB)
+		nextCandidates = self._trackDifferencesAndCalculateNextCandidates(directoryInfoA, directoryInfoB)
 		
-		for childofBoth in partialUnion:
-			newPathA = pathA + sep + childofBoth
-			newPathB = pathB + sep + childofBoth
+		for childofBoth in nextCandidates:
+			newPathA = self.pathFrom(pathA, childofBoth)
+			newPathB = self.pathFrom(pathB, childofBoth)
 			self._compareRecurse(newPathA, newPathB)

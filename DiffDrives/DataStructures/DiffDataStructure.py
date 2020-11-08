@@ -1,4 +1,4 @@
-from DiffDrives.Logging import printSTATUS
+from Logging import printSTATUS
 # separate data storage logic from the class logic
 class DiffDataStructure(object):
 	

@@ -1,5 +1,5 @@
 import pytest
-from DiffDrives.DiffDrives import main
+from DiffDrives import main
 '''
 needed
 each of the following cases for the top level directory:

@@ -1,5 +1,5 @@
-from DiffDrives.Fetchers.FetchDirectoryInfoAbstract import FetchDirectoryInfoAbstract
-from DiffDrives.DataStructures.DirectoryInfo import DirectoryInfo
+from Fetchers.FetchDirectoryInfoAbstract import FetchDirectoryInfoAbstract
+from DataStructures.DirectoryInfo import DirectoryInfo
 from os import walk
 '''
 Walks through the directory structure and generates tuples of three entries 

@@ -23,12 +23,6 @@ jobs:
           command:  pytest --junitxml=test-results/junit.xml -sv
       - store_test_results:
           path: test-results
-
       - store_artifacts:
           path: test-results
 
-#workflows:
-#  main:
-#    jobs:
-#      - python/test:
-#          test-tool: pytest

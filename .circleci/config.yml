@@ -3,11 +3,17 @@ version: 2.1
 orbs:
   python: circleci/python@1.2.1
 
-jobs:
-  build:
-    executor: python/default
-    steps:
-      - checkout
-      - run:
-          name: Run Tests
-          command: bash test.sh
+#jobs:
+#  build:
+#    executor: python/default
+#    steps:
+#      - checkout
+#      - run:
+#          name: Run Tests
+#          command: bash test.sh
+
+workflows:
+  main:
+    jobs:
+      - python/test:
+          test-tool: pytest

@@ -17,9 +17,13 @@ class CompareTwoDirectories(object):
 	def pathFrom(self, pathStart, nextLevel):
 		return pathStart + sep + nextLevel
 
-	def _getResultsOfSetOperations(self, dirsA, dirsB, filesA, filesB):
-		partialUnion = [x for x in dirsB if x in dirsA]
-		printSTATUS("dirs in B that are also in A:", partialUnion)
+	def _getResultsOfSetOperations(self, directoryInfoA, directoryInfoB):
+		dirsA, filesA = directoryInfoA.getDirs(), directoryInfoA.getFiles()
+		dirsB, filesB = directoryInfoB.getDirs(), directoryInfoB.getFiles()
+
+		# we want to recurse into any directories that exist in B and in A
+		unionDirs = [x for x in dirsB if x in dirsA]
+		printSTATUS("dirs in B that are also in A:", unionDirs)
 
 		dirsInAbutNotB = [x for x in dirsA if x not in dirsB]
 		printSTATUS("dirs in A but not in B:", dirsInAbutNotB)
@@ -27,23 +31,21 @@ class CompareTwoDirectories(object):
 		filesInAbutNotInB = [x for x in filesA if x not in filesB]
 		printSTATUS("files in A but not in B:", filesInAbutNotInB)
 
-		return partialUnion, dirsInAbutNotB, filesInAbutNotInB
+		return unionDirs, dirsInAbutNotB, filesInAbutNotInB
 	
 	def _trackDifferencesAndCalculateNextCandidates(self, directoryInfoA, directoryInfoB):
-		pathA, dirsA, filesA = directoryInfoA.getPath(), directoryInfoA.getDirs(), directoryInfoA.getFiles()
-		pathB, dirsB, filesB = directoryInfoB.getPath(), directoryInfoB.getDirs(), directoryInfoB.getFiles()
-		printDEBUG(pathA, dirsA, filesA, "||", pathB, dirsB, filesB)
+		unionDirs, dirsInAbutNotB, filesInAbutNotInB = self._getResultsOfSetOperations(directoryInfoA, directoryInfoB)
 
-		partialUnion, dirsInAbutNotB, filesInAbutNotInB = self._getResultsOfSetOperations(dirsA, dirsB, filesA, filesB)
-
-		#add the path to everything in "dirsInAbutNotB" and track it
+		# add the path to all files and dirs that were missing
+		pathB = directoryInfoB.getPath()
 		dirExtension = [self.pathFrom(pathB, x) for x in dirsInAbutNotB]
 		fileExtension = [self.pathFrom(pathB, x) for x in filesInAbutNotInB] 
 
+		# track all the missing files and dirs
 		self.dataStorage.trackDirs(dirExtension)
 		self.dataStorage.trackFiles(fileExtension)
 
-		return partialUnion
+		return unionDirs
 
 	def _compareRecurse(self, pathA, pathB):
 		printSTATUS("calling compareRecurse with", pathA, pathB)

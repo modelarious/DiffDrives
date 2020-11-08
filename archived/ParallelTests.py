@@ -67,19 +67,3 @@ def test_eval(directory, expected_output, testcase_num):
 	assert ( serialResult == expected_output)
 	assert ( parralelResult == serialResult)
 	
-'''
-def test_hard():
-	path1 = "/Volumes/MyRAID/Games"
-	path2 = "/Volumes/FUCKYOUWIND/Games"
-	serialResult = DiffDrives.main(path1, path2)
-	parallelResult = ParralelDiffDrives.main(path1, path2)
-	assert( parallelResult == serialResult)
-
-
-def test_very_hard():
-	path1 = "/Volumes/MyRAID"
-	path2 = "/Volumes/FUCKYOUWIND"
-	serialResult = DiffDrives.main(path1, path2)
-	parallelResult = ParralelDiffDrives.main(path1, path2)
-	self.assertDictEqual( parallelResult, serialResult)
-'''

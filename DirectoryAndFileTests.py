@@ -52,15 +52,5 @@ def test_eval(directory, expected_output, testcase_num):
 	print(BaseDir + directory, expected_output, testcase_num)
 	result = main(BaseDir + directory + "/" + TargetA, BaseDir + directory + "/" + TargetB)
 	assert ( result == expected_output)
-'''
-def test_hard():
-	path1 = "/Volumes/MyRAID/Games"
-	path2 = "/Volumes/FUCKYOUWIND/Games"
-	main(path1, path2)
-'''
 
-def test_very_hard():
-	path1 = "/Volumes/MyRAID"
-	path2 = "/Volumes/FUCKYOUWIND"
-	main(path1, path2)
 

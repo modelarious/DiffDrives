@@ -2,11 +2,14 @@ from pprint import pprint
 from os import path
 from sys import argv
 from Factories.CompareTwoDirectoriesEngineFactory import CompareTwoDirectoriesEngineFactory
-from Logging import printSTATUS
+from Logging import printSTATUS, printDEBUG
 
 def main(pathA, pathB):
 	printSTATUS(f"main called with {pathA}, {pathB}")
 	twoDirComp = CompareTwoDirectoriesEngineFactory.getEngine()
+
+	printDEBUG(f"path exists: {pathA}, {path.exists(pathA)}")
+	printDEBUG(f"path exists: {pathB}, {path.exists(pathB)}")
 
 	#verify paths exist before walking them
 	if path.exists(pathA) and path.exists(pathB):

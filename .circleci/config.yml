@@ -13,8 +13,8 @@ jobs:
           name: Install requirements
           command: pip install -r requirements.txt
       - run:
-          name: run ls on testing dir
-          command: ls Testing
+          name: unzip testing dir
+          command: unzip Testing.zip
       - run:
           name: Make test result directory
           command:  mkdir test-results
@@ -23,12 +23,6 @@ jobs:
           command:  pytest --junitxml=test-results/junit.xml -sv
       - store_test_results:
           path: test-results
-
       - store_artifacts:
           path: test-results
 
-#workflows:
-#  main:
-#    jobs:
-#      - python/test:
-#          test-tool: pytest

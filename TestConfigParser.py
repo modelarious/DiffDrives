@@ -29,7 +29,7 @@ class TestDataBuilder(object):
 
 # object that handles interpreting config and using the TestDataBuilder to 
 # create the directory/file structures found in configTesting.yml for use in
-# running directory testing.  The directories cannot be 
+# running directory testing.
 class TestDataInterpreter(object):
     def __init__(self, parsedYaml, testDataBuilder):
         self.testingConfig = parsedYaml
@@ -39,7 +39,7 @@ class TestDataInterpreter(object):
         self.filesKey = 'files'
         self.dirsKey = 'dirs'
 
-        self.baseDir = 'TestingMock'
+        self.baseDir = 'Testing'
         self.DiffTargetAKey = 'DiffTargetA'
         self.DiffTargetBKey = 'DiffTargetB'
         

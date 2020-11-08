@@ -13,8 +13,11 @@ jobs:
           name: Install requirements
           command: pip install -r requirements.txt
       - run:
-          name: unzip testing dir
-          command: unzip Testing.zip
+          name: Remove existing Testing dir if exists
+          command: rm -rf Testing
+      - run:
+          name: Generate testing data
+          command: python3 TestConfigParser.py
       - run:
           name: Make test result directory
           command:  mkdir test-results

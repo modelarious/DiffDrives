@@ -1,0 +1,150 @@
+Testing:
+- DifferentDirectoryStructureDifferentFilesFlat:
+  - DiffTargetA:
+    - A: []
+    - B: []
+    - C: []
+    - fileA.txt
+    - fileB.txt
+    - fileC.txt
+  - DiffTargetB:
+    - A: []
+    - B: []
+    - fileA.txt
+    - fileB.txt
+- DifferentDirectoryStructureDifferentFilesNested:
+  - DiffTargetA:
+    - A:
+      - E:
+        - fileA.txt
+        - fileB.txt
+        - fileC.txt
+      - F: []
+      - .DS_Store
+      - fileR.txt
+    - .DS_Store
+  - DiffTargetB:
+    - A:
+      - E:
+        - .DS_Store
+        - fileA.txt
+        - fileB.txt
+      - .DS_Store
+    - .DS_Store
+  - .DS_Store
+- DifferentDirectoryStructureFlat:
+  - DiffTargetA:
+    - A: []
+    - B: []
+    - C: []
+    - .DS_Store
+  - DiffTargetB:
+    - A: []
+    - B: []
+    - .DS_Store
+  - .DS_Store
+- DifferentDirectoryStructureNested:
+  - DiffTargetA:
+    - A:
+      - E: []
+      - F: []
+      - .DS_Store
+    - B: []
+    - C: []
+    - .DS_Store
+  - DiffTargetB:
+    - A:
+      - E: []
+      - .DS_Store
+    - B: []
+    - C: []
+    - .DS_Store
+  - .DS_Store
+- DifferentFilesFlat:
+  - DiffTargetA:
+    - fileA.txt
+    - fileB.txt
+    - fileC.txt
+  - DiffTargetB:
+    - fileA.txt
+    - fileB.txt
+  - .DS_Store
+- DifferentFilesNested:
+  - DiffTargetA:
+    - A:
+      - E:
+        - fileA.txt
+        - fileB.txt
+        - fileC.txt
+      - .DS_Store
+    - .DS_Store
+  - DiffTargetB:
+    - A:
+      - E:
+        - .DS_Store
+        - fileA.txt
+        - fileB.txt
+      - .DS_Store
+    - .DS_Store
+  - .DS_Store
+- SameDirectoryStructureFlat:
+  - DiffTargetA:
+    - A: []
+    - B: []
+    - C: []
+    - .DS_Store
+  - DiffTargetB:
+    - A: []
+    - B: []
+    - C: []
+    - .DS_Store
+  - .DS_Store
+- SameDirectoryStructureNested:
+  - DiffTargetA:
+    - A:
+      - E: []
+      - F: []
+      - .DS_Store
+    - B: []
+    - C: []
+    - .DS_Store
+  - DiffTargetB:
+    - A:
+      - E: []
+      - F: []
+      - .DS_Store
+    - B: []
+    - C: []
+    - .DS_Store
+  - .DS_Store
+- SameFilesFlat:
+  - DiffTargetA:
+    - fileA.txt
+    - fileB.txt
+    - fileC.txt
+  - DiffTargetB:
+    - fileA.txt
+    - fileB.txt
+    - fileC.txt
+- SameFilesNested:
+  - DiffTargetA:
+    - A:
+      - E:
+        - fileA.txt
+        - fileB.txt
+        - fileC.txt
+      - .DS_Store
+    - .DS_Store
+  - DiffTargetB:
+    - A:
+      - E:
+        - fileA.txt
+        - fileB.txt
+        - fileC.txt
+      - .DS_Store
+    - .DS_Store
+  - .DS_Store
+- .DS_Store
+- script.py
+- Testing.yaml
+- TestManifest.md

@@ -2,9 +2,6 @@ from os import sep
 from DataStructures.DiffDataStructure import DiffDataStructure
 from Logging import printSTATUS, printDEBUG
 
-'''
-[('Testing/DifferentDirectoryStructureDifferentFilesFlat', ['DiffTargetA', 'DiffTargetB'], [".DS_Store"]), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA', ['A', 'B', 'C'], ['fileA.txt', 'fileB.txt', 'fileC.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/B', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetA/C', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB', ['A', 'B'], ['fileA.txt', 'fileB.txt']), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/A', [], []), ('Testing/DifferentDirectoryStructureDifferentFilesFlat/DiffTargetB/B', [], [])]
-'''
 class CompareTwoDirectories(object):
 	def __init__(self, directoryInfoFetcher):
 		self.directoryInfoFetcher = directoryInfoFetcher
@@ -59,6 +56,10 @@ class CompareTwoDirectories(object):
 			return None
 
 		nextCandidates = self._trackDifferencesAndCalculateNextCandidates(directoryInfoA, directoryInfoB)
+
+		# XXX paranoid for now - will remove if this doesn't trigger the next time I use it
+		assert(directoryInfoA.getPath() == pathA)
+		assert(directoryInfoB.getPath() == pathB)
 		
 		for childofBoth in nextCandidates:
 			newPathA = self.pathFrom(pathA, childofBoth)

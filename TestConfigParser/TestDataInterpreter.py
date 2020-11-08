@@ -1,31 +1,4 @@
-import yaml
 from os import sep
-
-from os import path, makedirs, utime
-
-class YamlReader(object):
-    def fetchYaml(self, path):
-        with open(path, 'r') as config:
-            return yaml.safe_load(config)
-
-# object that handles interacting with the file system
-class TestDataBuilder(object):
-    # implementation of `touch` from https://stackoverflow.com/a/12654798/7520564
-    def _touch(self, path):
-        with open(path, 'a'):
-            utime(path, None)
-
-    def createFiles(self, context, filesToCreate):
-        for f in filesToCreate:
-            filePath = context + sep + f
-            if not path.exists(filePath):
-                print(f"FILE: {filePath}")
-                self._touch(filePath)
-    
-    def createDir(self, context):
-        if not path.exists(context):
-            print(f"DIR: {context}")
-            makedirs(context)
 
 # object that handles interpreting config and using the TestDataBuilder to 
 # create the directory/file structures found in configTesting.yml for use in
@@ -72,10 +45,3 @@ class TestDataInterpreter(object):
         if self.dirsKey in directory:
             for subDirName, subDirContents in directory[self.dirsKey].items():
                 self._handleDirectory(context + sep + subDirName, subDirContents)
-        
-
-yamlReader = YamlReader()
-parsedYaml = yamlReader.fetchYaml("configTesting.yml")
-testDataBuilder = TestDataBuilder()
-x = TestDataInterpreter(parsedYaml, testDataBuilder)
-x.setupTestingData()

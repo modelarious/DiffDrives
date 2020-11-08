@@ -17,7 +17,7 @@ jobs:
           command: rm -rf Testing
       - run:
           name: Generate testing data
-          command: python3 TestConfigParser.py
+          command: python3 TestConfigParser/TestConfigParser.py
       - run:
           name: Make test result directory
           command:  mkdir test-results

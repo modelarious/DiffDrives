@@ -13,8 +13,8 @@ jobs:
           name: Install requirements
           command: pip install -r requirements.txt
       - run:
-          name: run ls on testing dir
-          command: ls Testing
+          name: unzip testing dir
+          command: unzip Testing.zip
       - run:
           name: Make test result directory
           command:  mkdir test-results

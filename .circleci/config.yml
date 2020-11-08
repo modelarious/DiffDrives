@@ -6,6 +6,7 @@ orbs:
 jobs:
   build:
     executor: python/default
+    working_directory: ~/DiffDrives
     steps:
       - checkout
       - run:

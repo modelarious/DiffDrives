@@ -26,7 +26,7 @@ test that an empty A will report that correctly and quickly
 test that a large example will not mess up
 '''
 from TestConfigParser.YamlReader import YamlReader
-from TestConfigParser.constants import BaseDir, TargetA, TargetB
+from TestConfigParser.Constants import BaseDir, TargetA, TargetB
 from TestConfigParser.TestCaseConfigParser import TestCaseConfigParser
 from os import sep
 

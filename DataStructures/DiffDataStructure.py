@@ -18,4 +18,9 @@ class DiffDataStructure(object):
 		self.diff[self.dirsKey].extend(dirs)
 	
 	def getDiff(self):
+		sortedDiff = {
+			self.filesKey: sorted(self.diff[self.filesKey]),
+			self.dirsKey: sorted(self.diff[self.dirsKey])
+		}
+		self.diff = sortedDiff
 		return self.diff

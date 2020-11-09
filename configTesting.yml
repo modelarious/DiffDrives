@@ -1,0 +1,409 @@
+DifferentDirectoryStructureDifferentFilesFlat:
+  setup:
+    DiffTargetA:
+      files: [
+        fileA.txt,
+        fileB.txt,
+        fileC.txt,
+      ]
+      dirs:
+        A:
+        B:
+        C: 
+    DiffTargetB:
+      files: [
+        fileA.txt,
+        fileB.txt,
+      ]
+      dirs:
+        A:
+        B:
+  expectedOutput:
+    files: [
+      DiffTargetB/fileC.txt
+    ]
+    dirs: [
+      DiffTargetB/C
+    ]
+
+DifferentDirectoryStructureDifferentFilesNested:
+  setup:
+    DiffTargetA:
+      dirs:
+        A:
+          dirs:
+            E:
+              files: [
+                fileA.txt,
+                fileB.txt,
+                fileC.txt,
+              ]
+            F:
+    
+    DiffTargetB:
+      dirs:
+        A:
+          dirs:
+            E:
+              files: [
+                fileA.txt,
+                fileB.txt,
+              ]
+          
+  expectedOutput:
+    dirs: [
+      DiffTargetB/A/F
+    ] 
+    files: [
+      DiffTargetB/A/E/fileC.txt
+    ]
+
+DifferentDirectoryStructureFlat:
+  setup:
+    DiffTargetA:
+      dirs:
+        A:
+        B:
+        C:
+    DiffTargetB:
+      dirs:
+        A:
+        B:
+  expectedOutput:
+    dirs: [
+      DiffTargetB/C
+    ]
+    files: []
+
+DifferentDirectoryStructureNested:
+  setup:
+    DiffTargetA:
+      dirs:
+        A:
+          dirs:
+            E:
+            F:
+        B:
+        C:
+
+    DiffTargetB:
+      dirs:
+        A:
+          dirs:
+            E:
+        B:
+        C:
+  expectedOutput:
+    dirs: [
+      DiffTargetB/A/F
+    ]
+    files: []
+
+DifferentFilesFlat:
+  setup:
+    DiffTargetA:
+      files: [
+        fileA.txt,
+        fileB.txt,
+        fileC.txt,
+      ]
+    DiffTargetB:
+      files: [
+        fileA.txt,
+        fileB.txt,
+      ]
+  expectedOutput:
+    dirs: []
+    files: [
+      DiffTargetB/fileC.txt
+    ]
+
+DifferentFilesNested:
+  setup:
+    DiffTargetA:
+      dirs:
+        A:
+          dirs:
+            E:
+              files: [
+                fileA.txt,
+                fileB.txt,
+                fileC.txt,
+              ]
+    DiffTargetB:
+      dirs:
+        A:
+          dirs:
+            E:
+              files: [
+                fileA.txt,
+                fileB.txt,
+              ]
+  expectedOutput:
+    dirs: []
+    files: [
+      DiffTargetB/A/E/fileC.txt
+    ]
+
+SameDirectoryStructureFlat:
+  setup:
+    DiffTargetA:
+      dirs:
+        A:
+        B:
+        C:
+    
+    DiffTargetB:
+      dirs:
+        A:
+        B:
+        C:
+  expectedOutput:
+    dirs: [] 
+    files: []
+
+SameDirectoryStructureNested:
+  setup:
+    DiffTargetA:
+      dirs:
+        A:
+          dirs:
+            E:
+            F:
+        B:
+        C:
+
+    DiffTargetB:
+      dirs:
+        A:
+          dirs:
+            E:
+            F:
+        B:
+        C:
+  expectedOutput:
+    dirs: [] 
+    files: []
+
+SameFilesFlat:
+  setup:
+    DiffTargetA:
+      files: [
+        fileA.txt,
+        fileB.txt,
+        fileC.txt,
+      ]
+    DiffTargetB:
+      files: [
+        fileA.txt,
+        fileB.txt,
+        fileC.txt,
+      ]
+  expectedOutput:
+    dirs: [] 
+    files: []
+
+SameFilesNested:
+  setup:
+    DiffTargetA:
+      dirs:
+        A:
+          dirs:
+            E:
+              files: [
+                fileA.txt,
+                fileB.txt,
+                fileC.txt,
+              ]
+    DiffTargetB:
+      dirs:
+        A:
+          dirs:
+            E:
+              files: [
+                fileA.txt,
+                fileB.txt,
+                fileC.txt,
+              ]
+  expectedOutput:
+    dirs: [] 
+    files: []
+
+DeeplyNestedFileDifference:
+  setup:
+    DiffTargetA:
+      dirs:
+        A:
+          dirs:
+            B:
+              dirs:
+                C:
+                  dirs:
+                    D:
+                      files: [
+                        1.txt,
+                        2.txt
+                      ]
+    DiffTargetB:
+      dirs:
+        A:
+          dirs:
+            B:
+              dirs:
+                C:
+                  dirs:
+                    D:
+                      files: [
+                        1.txt
+                      ]
+  expectedOutput:
+    dirs: []
+    files: [
+      DiffTargetB/A/B/C/D/2.txt
+    ]
+
+DeeplyNestedDirectoryDifference:
+  setup:
+    DiffTargetA:
+      dirs:
+        A:
+          dirs:
+            B:
+              dirs:
+                C:
+                  dirs:
+                    D:
+                    E:
+                  files: [
+                    1.txt,
+                    2.txt
+                  ]
+    DiffTargetB:
+      dirs:
+        A:
+          dirs:
+            B:
+              dirs:
+                C:
+                  dirs:
+                    D:
+                  files: [
+                    1.txt,
+                    2.txt
+                  ]
+  expectedOutput:
+    dirs: [
+      DiffTargetB/A/B/C/E
+    ]
+    files: []
+
+DeeplyNestedMultipleDifferences:
+  setup:
+    DiffTargetA:
+      dirs:
+        A:
+          files: [
+            '123.txt'
+          ]
+          dirs:
+            B:
+              dirs:
+                C:
+                  dirs:
+                    D:
+                    E:
+                    F:
+                      dirs:
+                        H:
+                        I:
+                    G:
+                      files: [
+                        a.txt,
+                        b.txt,
+                        c.txt
+                      ]
+                  files: [
+                    1.txt,
+                    2.txt,
+                    3.txt,
+                    4.txt,
+                    5.txt
+                  ]
+    DiffTargetB:
+      dirs:
+        A:
+          dirs:
+            B:
+              dirs:
+                C:
+                  dirs:
+                    D:
+                  files: [
+                    1.txt,
+                    2.txt,
+                    5.txt
+                  ]
+  expectedOutput:
+    files: [
+      DiffTargetB/A/123.txt,
+      DiffTargetB/A/B/C/3.txt,
+      DiffTargetB/A/B/C/4.txt,
+    ]
+    dirs: [
+      DiffTargetB/A/B/C/E,
+      DiffTargetB/A/B/C/F,
+      DiffTargetB/A/B/C/G,
+    ]
+
+EntireDirectoryOfFilesMissing:
+  setup:
+    DiffTargetA:
+      dirs:
+        A:
+        B:
+          files: [
+            1.txt,
+            2.txt,
+            3.txt,
+            4.txt,
+            5.txt
+          ]
+
+    DiffTargetB:
+      dirs:
+        A:
+  expectedOutput:
+    files: []
+    dirs: [
+      DiffTargetB/B
+    ]
+
+EmptyDirectoryA:
+  setup:
+    DiffTargetA:
+    DiffTargetB:
+      dirs:
+        A:
+  expectedOutput:
+    files: []
+    dirs: []
+
+EmptyDirectoryB:
+  setup:
+    DiffTargetA:
+      dirs:
+        A:
+    DiffTargetB:
+  expectedOutput:
+    files: []
+    dirs: [
+      DiffTargetB/A
+    ]
+
+BothEmpty:
+  setup:
+    DiffTargetA:
+    DiffTargetB:
+  expectedOutput:
+    files: []
+    dirs: []

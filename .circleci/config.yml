@@ -13,14 +13,26 @@ jobs:
           name: Install requirements
           command: pip install -r requirements.txt
       - run:
-          name: unzip testing dir
-          command: unzip Testing.zip
+          name: update apt-get
+          command: sudo apt-get update
+      - run:
+          name: Install tree
+          command: sudo apt-get install tree
+      - run:
+          name: Remove existing Testing dir if exists
+          command: rm -rf Testing
+      - run:
+          name: Generate testing data
+          command: python3 TestConfigParser/TestConfigParser.py
+      - run:
+          name: View generated data structure
+          command: tree Testing
       - run:
           name: Make test result directory
           command:  mkdir test-results
       - run:
           name: Run tests
-          command:  pytest --junitxml=test-results/junit.xml -sv
+          command:  pytest --junitxml=test-results/junit.xml -svv
       - store_test_results:
           path: test-results
       - store_artifacts:

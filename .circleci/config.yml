@@ -13,6 +13,12 @@ jobs:
           name: Install requirements
           command: pip install -r requirements.txt
       - run:
+          name: update apt-get
+          command: sudo apt-get update
+      - run:
+          name: Install tree
+          command: sudo apt-get install tree
+      - run:
           name: Remove existing Testing dir if exists
           command: rm -rf Testing
       - run:

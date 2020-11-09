@@ -32,6 +32,6 @@ class TestCaseConfigParser(object):
 		for k, v in expectedOutput.items():
 			newV = []
 			for entry in v:
-				newV.append(BaseDir + testCaseName + sep + entry)
+				newV.append(BaseDir + sep + testCaseName + sep + entry)
 			expectedOutputAdjusted[k] = sorted(newV)
 		return expectedOutputAdjusted

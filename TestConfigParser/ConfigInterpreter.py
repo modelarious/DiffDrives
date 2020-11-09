@@ -3,7 +3,7 @@ from os import sep
 # object that handles interpreting config and using the TestDataBuilder to 
 # create the directory/file structures found in configTesting.yml for use in
 # running directory testing.
-class TestDataInterpreter(object):
+class ConfigInterpreter(object):
     def __init__(self, parsedYaml, testDataBuilder):
         self.testingConfig = parsedYaml
         self.builder = testDataBuilder
@@ -12,6 +12,7 @@ class TestDataInterpreter(object):
         self.filesKey = 'files'
         self.dirsKey = 'dirs'
 
+        # XXX these should be constants available outside this class
         self.baseDir = 'Testing'
         self.DiffTargetAKey = 'DiffTargetA'
         self.DiffTargetBKey = 'DiffTargetB'

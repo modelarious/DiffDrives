@@ -1,13 +1,13 @@
 from TestDataBuilder import TestDataBuilder
 from YamlReader import YamlReader
-from TestDataInterpreter import TestDataInterpreter
+from ConfigInterpreter import ConfigInterpreter
 
 class TestConfigParser(object):
     def __init__(self):
         testDataBuilder = TestDataBuilder()
         parsedYaml = YamlReader().fetchYaml("configTesting.yml")
 
-        interpreter = TestDataInterpreter(parsedYaml, testDataBuilder)
+        interpreter = ConfigInterpreter(parsedYaml, testDataBuilder)
         interpreter.setupTestingData()
 
 TestConfigParser()

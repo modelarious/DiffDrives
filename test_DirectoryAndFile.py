@@ -6,8 +6,6 @@ needed
 Test existing tests (like SameDirectoryStructureFlat) with each of the operands targetA and targetB swapped with a new set of expected outputs
 
 test that an empty A will report that correctly and quickly
-
-test that a large example will not mess up
 '''
 from TestConfigParser.YamlReader import YamlReader
 from TestConfigParser.Constants import baseDir, targetA, targetB

@@ -1,5 +1,7 @@
 from os import sep
 
+from Constants import BaseDir, TargetA, TargetB
+
 # object that handles interpreting config and using the TestDataBuilder to 
 # create the directory/file structures found in configTesting.yml for use in
 # running directory testing.
@@ -11,11 +13,6 @@ class ConfigInterpreter(object):
         self.setupKey = 'setup'
         self.filesKey = 'files'
         self.dirsKey = 'dirs'
-
-        # XXX these should be constants available outside this class
-        self.baseDir = 'Testing'
-        self.DiffTargetAKey = 'DiffTargetA'
-        self.DiffTargetBKey = 'DiffTargetB'
         
     def setupTestingData(self):
         for testCaseName in self.testingConfig:
@@ -23,8 +20,8 @@ class ConfigInterpreter(object):
             self._setupTestingData(testCaseName, testCaseSetup)
     
     def _setupTestingData(self, testCaseName, testCaseSetup):
-        for setupDir in [self.DiffTargetAKey, self.DiffTargetBKey]:
-            context = self.baseDir + sep + testCaseName + sep + setupDir
+        for setupDir in [TargetA, TargetB]:
+            context = BaseDir + sep + testCaseName + sep + setupDir
             currentSetup = testCaseSetup[setupDir]
             self._handleDirectory(context, currentSetup)
 

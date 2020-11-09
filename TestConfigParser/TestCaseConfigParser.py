@@ -24,7 +24,6 @@ class TestCaseConfigParser(object):
 				self.tcNum
 			)
 		)
-		
 
 	def _addExtendedPathInfo(self, testCaseName, expectedOutput):
 		# add the base test dir and the testCaseName dir to the front of every file and directory in expected results

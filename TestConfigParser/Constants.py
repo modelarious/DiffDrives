@@ -1,3 +1,3 @@
-BaseDir = "Testing"
-TargetA = "DiffTargetA"
-TargetB = "DiffTargetB"
+baseDir = "Testing"
+targetA = "DiffTargetA"
+targetB = "DiffTargetB"

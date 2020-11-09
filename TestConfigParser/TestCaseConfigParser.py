@@ -1,5 +1,5 @@
 from os import sep
-from constants import BaseDir
+from Constants import BaseDir
 class TestCaseConfigParser(object):
 	def __init__(self, parsedYaml):
 		self.parsedYaml = parsedYaml

@@ -20,15 +20,15 @@ with each of the following variations based on files
                 #('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetA', [*], ['A']) ('Testing/DifferentDirectoryStructureDifferentFilesNested/DiffTargetB', [*], ['A', 'B'])
 
 
-Test existing tests (like SameDirectoryStructureFlat) with each of the operands targetA and targetB swapped with a new set of expected outputs
+Test existing tests (like SameDirectoryStructureFlat) with each of the operands TargetA and TargetB swapped with a new set of expected outputs
 
 test that an empty A will report that correctly and quickly
 
 test that a large example will not mess up
 '''
-baseDir = "Testing/"
-targetA = "DiffTargetA"
-targetB = "DiffTargetB"
+BaseDir = "Testing/"
+TargetA = "DiffTargetA"
+TargetB = "DiffTargetB"
 
 Directories = [
 	'SameDirectoryStructureFlat', 
@@ -60,10 +60,10 @@ TestCaseNums = [f"TC_{i+1:03d}" for i in range(len(Directories))]
 
 @pytest.mark.parametrize("directory, expected_output, testcase_num", list(zip(Directories, ExpectedOutputs, TestCaseNums)))
 def test_eval(directory, expected_output, testcase_num):
-	print(baseDir + directory, expected_output, testcase_num)
+	print(BaseDir + directory, expected_output, testcase_num)
 	
-	serialResult = DiffDrives.main(baseDir + directory + "/" + targetA, baseDir + directory + "/" + targetB)
-	parralelResult = ParralelDiffDrives.main(baseDir + directory + "/" + targetA, baseDir + directory + "/" + targetB)
+	serialResult = DiffDrives.main(BaseDir + directory + "/" + TargetA, BaseDir + directory + "/" + TargetB)
+	parralelResult = ParralelDiffDrives.main(BaseDir + directory + "/" + TargetA, BaseDir + directory + "/" + TargetB)
 	assert ( serialResult == expected_output)
 	assert ( parralelResult == serialResult)
 	

@@ -1,5 +1,3 @@
-
-
 # copy2 will copy metadata of the file
 from shutil import copy2, copytree
 from os import path

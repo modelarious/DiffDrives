@@ -7,19 +7,26 @@ from Logging import printSTATUS
 
 def main(pathA, pathB):
 	printSTATUS(f"main called with {pathA}, {pathB}")
-	twoDirComp = CompareTwoDirectoriesEngineFactory.getEngine()
-	copyContents = CopyFilesAndDirectoriesEngineFactory.getEngine()
 
-	#verify paths exist before walking them
-	if path.exists(pathA) and path.exists(pathB):
-		contentsInAButNotB = twoDirComp.compare(pathA, pathB)
-		pprint(contentsInAButNotB, width=300)
-		# userConfirmation = input(f"Would you like to copy all the above files and directories over from {pathA} to {pathB} (y/n): ")
-		# if userConfirmation.lower() == "y":
-		# 	print("COPYING")
+	# verify paths exist before walking them
+	if not path.exists(pathA) or not path.exists(pathB):
+		return -1
+
+	# compare the directories
+	twoDirComp = CompareTwoDirectoriesEngineFactory.getEngine()
+	contentsInAButNotB = twoDirComp.compare(pathA, pathB)
+	pprint(contentsInAButNotB, width=300)
+
+	# optionally copy the directories
+	userConfirmation = input(f"Would you like to copy all the above files and directories over from {pathA} to {pathB} (y/n): ")
+	if userConfirmation.lower() == "y":
+		print("COPYING")
+		copyContents = CopyFilesAndDirectoriesEngineFactory.getEngine()
 		copyContents.copyFilesAndDirectories(pathA, pathB, contentsInAButNotB)
-		return contentsInAButNotB.getDiff()	
-	return -1
+	
+	# return success
+	return 0	
+	
 
 if __name__ == "__main__":
 	if len(argv) != 3:

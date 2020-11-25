@@ -15,7 +15,7 @@ def main(pathA, pathB):
 	# compare the directories
 	twoDirComp = CompareTwoDirectoriesEngineFactory.getEngine()
 	contentsInAButNotB = twoDirComp.compare(pathA, pathB)
-	pprint(contentsInAButNotB, width=300)
+	pprint(contentsInAButNotB.getDiff(), width=300)
 
 	# optionally copy the directories
 	userConfirmation = input(f"Would you like to copy all the above files and directories over from {pathA} to {pathB} (y/n): ")

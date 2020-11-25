@@ -24,3 +24,9 @@ class DiffDataStructure(object):
 		}
 		self.diff = sortedDiff
 		return self.diff
+	
+	def getFiles(self):
+		return self.diff[self.filesKey]
+	
+	def getDirectories(self):
+		return self.diff[self.dirsKey]

@@ -1,4 +1,4 @@
-from os import sep
+from os import path
 
 from Constants import baseDir, targetA, targetB
 
@@ -21,7 +21,7 @@ class ConfigInterpreter(object):
     
     def _setupTestingData(self, testCaseName, testCaseSetup):
         for setupDir in [targetA, targetB]:
-            context = baseDir + sep + testCaseName + sep + setupDir
+            context = path.join(baseDir, testCaseName, setupDir)
             currentSetup = testCaseSetup[setupDir]
             self._handleDirectory(context, currentSetup)
 
@@ -42,4 +42,4 @@ class ConfigInterpreter(object):
         # if there are directories in the directory, recurse and create them too
         if self.dirsKey in directory:
             for subDirName, subDirContents in directory[self.dirsKey].items():
-                self._handleDirectory(context + sep + subDirName, subDirContents)
+                self._handleDirectory(path.join(context, subDirName), subDirContents)

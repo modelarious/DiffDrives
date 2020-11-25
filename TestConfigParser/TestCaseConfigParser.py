@@ -1,4 +1,4 @@
-from os import sep
+from os import path
 from TestConfigParser.Constants import baseDir
 class TestCaseConfigParser(object):
 	def __init__(self, parsedYaml):
@@ -31,6 +31,6 @@ class TestCaseConfigParser(object):
 		for k, v in expectedOutput.items():
 			newV = []
 			for entry in v:
-				newV.append(baseDir + sep + testCaseName + sep + entry)
+				newV.append(path.join(baseDir, testCaseName, entry))
 			expectedOutputAdjusted[k] = sorted(newV)
 		return expectedOutputAdjusted

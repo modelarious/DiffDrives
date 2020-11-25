@@ -9,9 +9,9 @@ class CompareTwoDirectories(object):
 	def compare(self, pathA, pathB):
 		self.dataStorage = DiffDataStructure()
 		self._compareRecurse(pathA, pathB)
-		return self.dataStorage.getDiff()
+		return self.dataStorage
 	
-	def pathFrom(self, pathStart, nextLevel):
+	def _pathFrom(self, pathStart, nextLevel):
 		return pathStart + sep + nextLevel
 
 	def _getResultsOfSetOperations(self, directoryInfoA, directoryInfoB):
@@ -35,8 +35,8 @@ class CompareTwoDirectories(object):
 
 		# add the path to all files and dirs that were missing
 		pathB = directoryInfoB.getPath()
-		dirExtension = [self.pathFrom(pathB, x) for x in dirsInAbutNotB]
-		fileExtension = [self.pathFrom(pathB, x) for x in filesInAbutNotInB] 
+		dirExtension = [self._pathFrom(pathB, x) for x in dirsInAbutNotB]
+		fileExtension = [self._pathFrom(pathB, x) for x in filesInAbutNotInB] 
 
 		# track all the missing files and dirs
 		self.dataStorage.trackDirs(dirExtension)
@@ -56,12 +56,8 @@ class CompareTwoDirectories(object):
 			return None
 
 		nextCandidates = self._trackDifferencesAndCalculateNextCandidates(directoryInfoA, directoryInfoB)
-
-		# XXX paranoid for now - will remove if this doesn't trigger the next time I use it
-		assert(directoryInfoA.getPath() == pathA)
-		assert(directoryInfoB.getPath() == pathB)
 		
 		for childofBoth in nextCandidates:
-			newPathA = self.pathFrom(pathA, childofBoth)
-			newPathB = self.pathFrom(pathB, childofBoth)
+			newPathA = self._pathFrom(pathA, childofBoth)
+			newPathB = self._pathFrom(pathB, childofBoth)
 			self._compareRecurse(newPathA, newPathB)

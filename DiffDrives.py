@@ -32,8 +32,12 @@ if __name__ == "__main__":
 	if len(argv) != 3:
 		print("usage: python3 DiffDrives.py /path/to/dir/1 /path/to/dir/2")
 		exit(-1)
+	
+	# clean up input (make sure both dirs are terminated with a separator)
+	source = path.join(argv[1], "")
+	dest = path.join(argv[2], "")
 
 	#pass in the two paths to be diffed
-	returnCode = main(argv[1], argv[2])
+	returnCode = main(source, dest)
 	exit(returnCode)
 	 

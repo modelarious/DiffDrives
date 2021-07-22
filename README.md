@@ -1,6 +1,10 @@
 # DiffDrives
 A tool I use to quickly compare the directory structure of two different directories, and optionally copy any files/directories that exist in directory1 to directory2.
 
+# Install
+Install requirements:
+`pip3 install -r requirements.txt`
+
 # Usage
 Compare and optionally copy files from /path/to/directory/1 to /path/to/directory/2:
 `python3 DiffDrives.py /path/to/directory/1 /path/to/directory/2`

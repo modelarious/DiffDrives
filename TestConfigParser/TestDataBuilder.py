@@ -1,4 +1,4 @@
-from os import path, makedirs, utime, sep
+from os import path, makedirs, utime
 # object that handles interacting with the file system
 class TestDataBuilder(object):
     # implementation of `touch` from https://stackoverflow.com/a/12654798/7520564
@@ -8,7 +8,7 @@ class TestDataBuilder(object):
 
     def createFiles(self, context, filesToCreate):
         for f in filesToCreate:
-            filePath = context + sep + f
+            filePath = path.join(context, f)
             if not path.exists(filePath):
                 print(f"FILE: {filePath}")
                 self._touch(filePath)

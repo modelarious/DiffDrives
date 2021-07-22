@@ -7,10 +7,17 @@ class DirectoryInfo(object):
     def __init__(self, path, dirs, files):
         #various files that don't need to be considered
         skippedFiles = [".DS_Store"]
+        skippedDirectories = [".fseventsd", '.Spotlight-V100', '.Trashes', '.DocumentRevisions-V100', '.TemporaryItems']
+        
+#         ignoreFileRegex = '._'
 
         self.path = path
-        self.containedDirectories = set(dirs)
-        self.containedFiles = set((f for f in files if f not in skippedFiles))
+        self.containedDirectories = self._skip(dirs, skippedDirectories)
+        self.containedFiles = self._skip(files, skippedFiles)
+
+    def _skip(self, array, skipValues):
+        return set((v for v in array if v not in skipValues))
+        #return set((v for v in array if v not in skipValues and not v.startswith(self.ignoreFileRegex)))
 
     def getPath(self):
         return self.path

@@ -43,7 +43,7 @@ def getPath(nameDirsFilesTuple):
 	return nameDirsFilesTuple[0]
 
 def getDirs(nameDirsFilesTuple):
-	return nameDirsFilesTuple[1]
+	return [f for f in nameDirsFilesTuple[1] if f not in ['.DocumentRevisions-V100']]
 
 def getFiles(nameDirsFilesTuple):
 	return [f for f in nameDirsFilesTuple[2] if f not in skippedFiles]
